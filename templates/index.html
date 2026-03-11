@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loan Risk Predictor</title>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #f4f6f9;
+        display: flex;
+        height: 100vh;
+        margin: 0;
+      }
+
+      /* LEFT PANEL */
+      .left-panel {
+        flex: 1;
+        background: linear-gradient(135deg, #0a1f44, #123c69);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+        text-align: center;
+        transition: all 0.8s ease-in-out;
+      }
+      .logo {
+        font-size: 34px;
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
+      .tagline {
+        font-size: 17px;
+        color: #c5d4ec;
+        max-width: 280px;
+        line-height: 1.5;
+      }
+
+      /* RIGHT PANEL */
+      .right-panel {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+        overflow-y: auto;
+      }
+
+      .form-container {
+        background: #fff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        height: 100vh;
+        overflow: scroll;
+      }
+
+      h2 {
+        text-align: center;
+        color: #0a1f44;
+        font-size: 26px;
+        margin-bottom: 25px;
+      }
+
+      label {
+        margin-top: 15px;
+        display: block;
+        font-weight: 600;
+        color: #333;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        margin-top: 8px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: 0.3s;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #123c69;
+        outline: none;
+        box-shadow: 0 0 8px rgba(18, 60, 105, 0.4);
+      }
+
+      button {
+        margin-top: 25px;
+        width: 100%;
+        padding: 14px;
+        background: #123c69;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background 0.3s ease, transform 0.2s;
+      }
+
+      button:hover {
+        background: #0a1f44;
+        transform: translateY(-2px);
+      }
+
+      /* RESULT PANEL (LEFT SIDE CHANGES TO THIS) */
+      .result-box {
+        display: none;
+        animation: fadeIn 1s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .decision {
+        font-size: 22px;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+      .probability {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+      .explanation {
+        font-size: 15px;
+        color: #d6e0f0;
+        text-align: left;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 15px;
+        border-radius: 8px;
+        line-height: 1.6;
+      }
+      .highlight-pos {
+        color: #8eff8e;
+        font-weight: bold;
+      }
+      .highlight-neg {
+        color: #ff7e7e;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- LEFT PANEL -->
+    <div class="left-panel" id="leftPanel">
+      <div class="logo">SmartBank</div>
+      <div class="tagline" id="tagline">
+        Empowering smarter loan decisions with AI-driven insights.
+      </div>
+
+      <div id="resultBox" class="result-box">
+        <div id="decisionText" class="decision"></div>
+        <div id="probabilityText" class="probability"></div>
+        <div id="explanationText" class="explanation"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <div class="form-container">
+        <h2>Loan Risk Predictor</h2>
+        <form id="loanForm">
+          <label>Employment Length</label>
+          <select name="emp_length" required>
+            <option>1 year</option>
+            <option>2 years</option>
+            <option>3 years</option>
+            <option>4 years</option>
+            <option>5 years</option>
+            <option>6 years</option>
+            <option>7 years</option>
+            <option>8 years</option>
+            <option>9 years</option>
+            <option>10+ years</option>
+            <option>&lt; 1 year</option>
+          </select>
+
+          <label>Grade</label>
+          <select name="grade" required>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+            <option>E</option>
+            <option>F</option>
+            <option>G</option>
+          </select>
+
+          <label>Home Ownership</label>
+          <select name="home_ownership" required>
+            <option>OWN</option>
+            <option>RENT</option>
+            <option>MORTGAGE</option>
+            <option>OTHER</option>
+          </select>
+
+          <label>Purpose</label>
+          <select name="purpose" required>
+            <option>car</option>
+            <option>credit card</option>
+            <option>debt consolidation</option>
+            <option>educational</option>
+            <option>home improvement</option>
+            <option>house</option>
+            <option>major purchase</option>
+            <option>medical</option>
+            <option>moving</option>
+            <option>renewable_energy</option>
+            <option>small business</option>
+            <option>vacation</option>
+            <option>wedding</option>
+            <option>other</option>
+          </select>
+
+          <label>Term (Months)</label>
+          <select
+            id="term"
+            name="term"
+            required
+            onchange="calculateInstallment()"
+          >
+            <option value="36">36</option>
+            <option value="60">60</option>
+          </select>
+
+          <label>Interest Rate (%)</label>
+          <select
+            id="interest_rate"
+            name="interest_rate"
+            required
+            onchange="calculateInstallment()"
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+          </select>
+
+          <label>Annual Income ($)</label>
+          <input type="number" name="annual_income" required />
+
+          <label>Loan Amount ($)</label>
+          <input
+            type="number"
+            id="loan_amount"
+            name="loan_amount"
+            required
+            oninput="calculateInstallment()"
+          />
+
+          <label>Installment ($)</label>
+          <input
+            type="text"
+            id="installment"
+            name="installment"
+            readonly
+            style="background: #f4f6f9; font-weight: bold"
+          />
+
+          <button type="submit">Predict Risk</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function calculateInstallment() {
+        let loanAmount = parseFloat(
+          document.getElementById("loan_amount").value
+        );
+        let term = parseInt(document.getElementById("term").value);
+        let annualRate = parseFloat(
+          document.getElementById("interest_rate").value
+        );
+
+        if (!loanAmount || !term || !annualRate) {
+          document.getElementById("installment").value = "";
+          return;
+        }
+
+        let r = annualRate / 100 / 12;
+        let installment =
+          r === 0
+            ? loanAmount / term
+            : (loanAmount * r) / (1 - Math.pow(1 + r, -term));
+        document.getElementById("installment").value = installment.toFixed(2);
+      }
+
+      // Handle Prediction
+      const form = document.getElementById("loanForm");
+      const leftPanel = document.getElementById("leftPanel");
+      const tagline = document.getElementById("tagline");
+      const resultBox = document.getElementById("resultBox");
+      const decisionText = document.getElementById("decisionText");
+      const probabilityText = document.getElementById("probabilityText");
+      const explanationText = document.getElementById("explanationText");
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const response = await fetch("/predict", {
+          method: "POST",
+          body: formData,
+        });
+        const result = await response.json();
+
+        tagline.style.display = "none";
+        resultBox.style.display = "block";
+
+        decisionText.textContent = result.decision;
+        probabilityText.textContent = `Repayment Probability: ${result.probability}%`;
+
+        // Color decision
+        decisionText.style.color = result.decision.includes("Approved")
+          ? "#8eff8e"
+          : "#ff7e7e";
+
+        // Highlight explanation
+        let explanationHTML = result.explanation
+          .split(", ")
+          .map((txt) =>
+            txt.includes("increased")
+              ? `<span class='highlight-pos'>${txt}</span>`
+              : `<span class='highlight-neg'>${txt}</span>`
+          )
+          .join("<br>");
+        explanationText.innerHTML = `<strong>Key Influences:</strong><br>${explanationHTML}`;
+      });
+    </script>
+  </body>
+</html>
